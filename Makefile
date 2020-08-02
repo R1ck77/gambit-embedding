@@ -1,6 +1,7 @@
 .PHONY: run clean all
 
 EXEC=gambit-embedding
+GAMBIT_LIBS=-L/usr/lib/x86_64-linux-gnu/gambit4 -lgambit
 
 run: all
 	./$(EXEC)
@@ -8,7 +9,7 @@ run: all
 all: $(EXEC)
 
 $(EXEC): gambit-embedding.c
-	gcc -o $@ $<
+	gcc -o $@ $< $(GAMBIT_LIBS)
 
 clean:
 	rm -rf $(EXEC)
