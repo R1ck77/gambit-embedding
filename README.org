@@ -1,5 +1,4 @@
-#+TITLE Gambit-C embedding test
-#+LANGUAGE en
+* Gambit-C embedding test
 
 A small test project to explore how hard (or hopefully easy…) it is to embed a Scheme interpreter in a C program using Gambit-C.
 
