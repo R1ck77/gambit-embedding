@@ -1,3 +1,6 @@
 *~
 \#*
+*.o
+*_.c
+myeval.c
 gambit-embedding
