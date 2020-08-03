@@ -10,7 +10,8 @@ extern ___mod_or_lnk SCHEME_LIBRARY_LINKER (___global_state);
 ___END_C_LINKAGE
 
 int main(int argc, char *argv[]) {
-
+  fprintf(stderr, "Program executed\n");
+ 
   ___setup_params_struct setup_params;
   setup_params.linker = SCHEME_LIBRARY_LINKER;
 
