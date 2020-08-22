@@ -12,5 +12,5 @@ $(EXEC): gambit-embedding.c
 	gcc -o $@ $< $(GAMBIT_LIBS)
 
 clean:
-	rm -rf $(EXEC)
+	rm -rf $(EXEC) *.o* *_.c
 
