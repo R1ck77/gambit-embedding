@@ -2,12 +2,17 @@
 ;; This one leaks
 (c-declare "
 #include <string.h>
+#include <stdlib.h>
 
 char *hello_world()
 {
    return strdup(\"Hello, World!\");
 }")
-(define say-hello (c-lambda () char-string "hello_world"))
+
+(define say-hello (c-lambda () char-string
+                            " char *output = hello_world();
+#define ___AT_END free(output);
+___return (output); "))
 
 ;; This one does not leak
 (c-declare "
@@ -20,7 +25,7 @@ char *echo(char *string)
 (define (print-forever)
   (display
    (string-append
-    (echo "Hello, World!") "\n"))
+    (say-hello) "\n"))
   (print-forever))
 
 (print-forever)
