@@ -8,17 +8,23 @@
    return strdup(\"Hello, World!\");
 }")
 
-(define sane-hello (c-lambda () char-string
-                             "char *output = hello_world();
-#define ___AT_END free(output);
-___return (output);"))
+(c-declare "char *identity(char *arg) {
+    return arg;
+}")
 
-(define nice-but-leaking-hello (c-lambda () char-string "hello_world"))
+(c-declare "___SCMOBJ scm_free(void *arg) {
+    free(arg);
+    return 0;
+}" )
 
-(define (eat-memory)
-  (display (string-append (nice-but-leaking-hello) "\n"))
-  (eat-memory))
+(define sane-hello (c-lambda () (pointer char (char*) "scm_free") "hello_world"))
 
-(eat-memory)
+(define to-string (c-lambda ((pointer char)) char-string "identity"))
+
+(define (sane-hello-loop)
+  (display (string-append (to-string (sane-hello)) "\n"))
+  (sane-hello-loop))
+
+(sane-hello-loop)
 
 
