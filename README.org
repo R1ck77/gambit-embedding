@@ -6,3 +6,4 @@ The code is expected to test:
 
 - embedding, as the execution of a Scheme snippet with I/O from and to C
 - extending, the addition of a "module" with C code
+- the - rather original but interesting - compiler
