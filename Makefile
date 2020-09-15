@@ -1,12 +1,12 @@
 .PHONY: clean run all
 
 run: all
-	./test
+	./sdl
 
-all: test
+all: sdl
 
-test: test.scm
+sdl: sdl.scm
 	gsc -exe -o $@ -cc-options "`pkg-config --cflags sdl2`" -ld-options "`pkg-config --libs sdl2`" $<
 
 clean:
-	rm -f test
+	rm -f sdl
