@@ -1,8 +1,7 @@
 
 (c-declare "#include <SDL.h>")
 
-(c-declare "
-inline static char *convertPointer(const char *string)
+(c-declare "inline static char *convertPointer(const char *string)
 {
     return (char *) string;
 }")
@@ -43,5 +42,4 @@ ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &w
 
 
 (sdl-quit)
-
 
