@@ -1,6 +1,5 @@
 
-(c-declare "
- #include <SDL.h>")
+(c-declare "#include <SDL.h>")
 
 (c-declare "
 inline static char *convertPointer(const char *string)
