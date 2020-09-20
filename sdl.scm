@@ -34,7 +34,7 @@
     return 0;
 }")
 
-;; TODO/FIXME static typing
+;; TODO/FIXME static typing. Not clear why I need to cast…
 (define simple-sdl-create-window-and-renderer (c-lambda (int int window-ptr renderer-ptr) int
 "
 SDL_Window* window = (SDL_Window*) ___arg3;
