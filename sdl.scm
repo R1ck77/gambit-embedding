@@ -24,9 +24,9 @@
 (define sdl-log (c-lambda (char-string char-string) void "SDL_Log"))
 (define sdl-get-error (c-lambda () char-string "___return((char *) SDL_GetError());"))
 
-(c-define-type window-ptr (pointer (type "SDL_Renderer") (void) "scm_free"))
+(c-define-type window-ptr (pointer (type "SDL_Window") (void) "scm_free"))
 (define create-window-ptr (c-lambda () window-ptr "___return(malloc(sizeof(SDL_Window*)));"))
-(c-define-type renderer-ptr (pointer (type "SDL_Window") (void) "scm_free"))
+(c-define-type renderer-ptr (pointer (type "SDL_Renderer") (void) "scm_free"))
 (define create-renderer-ptr (c-lambda () renderer-ptr "___return(malloc(sizeof(SDL_Renderer*)));"))
 
 (c-declare "long int scm_free(void *memory) {
@@ -34,11 +34,10 @@
     return 0;
 }")
 
-;; TODO/FIXME static typing. Not clear why I need to cast…
 (define simple-sdl-create-window-and-renderer (c-lambda (int int window-ptr renderer-ptr) int
 "
-SDL_Window* window = (SDL_Window*) ___arg3;
-SDL_Renderer *renderer = (SDL_Renderer*) ___arg4;
+SDL_Window* window =  ___arg3;
+SDL_Renderer *renderer =  ___arg4;
 ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &window, &renderer));"))
 
 (when (not (= 0 (sdl-init sdl-init-everything)))
