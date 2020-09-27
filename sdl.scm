@@ -49,6 +49,15 @@
                                      void
                                      "SDL_RenderPresent"))
 
+;; SDL_GL_Context
+(c-declare "long int scm_free_gl_context(SDL_GLContext context) {
+    SDL_GL_DeleteContext(context);
+    return 0;
+}")
+(c-define-type sdl-gl-context (pointer (type "SDL_GLContext") (void) "scm_free_gl_context"))
+(define sdl-gl-create-context (c-lambda (window-ptr) sdl-gl-context "SDL_GL_CreateContext"))
+
+
 (define sdl-create-window-and-renderer (c-lambda (int int window-ptr renderer-ptr)
                                                  int
                                                  " SDL_Window* window =  ___arg3;
@@ -58,10 +67,10 @@ ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &w
 
 
 ;; SDL_Event
-(c-define-type event-ptr (pointer (type "SDL_Event") (void)))
-(define create-event-ptr (c-lambda () event-ptr "___return(malloc(sizeof(SDL_Event)));"))
-(define get-event-type (c-lambda (event-ptr) int "___return(___arg1->type);"))
-(define sdl-poll-event! (c-lambda (event-ptr) void "SDL_PollEvent(___arg1);"))
+(c-define-type sdl-event (pointer (type "SDL_Event") (void)))
+(define create-sdl-event (c-lambda () sdl-event "___return(malloc(sizeof(SDL_Event)));"))
+(define get-event-type (c-lambda (sdl-event) int "___return(___arg1->type);"))
+(define sdl-poll-event! (c-lambda (sdl-event) void "SDL_PollEvent(___arg1);"))
 
 (c-declare "long int scm_free(void *memory) {
     free(memory);
@@ -108,7 +117,7 @@ ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &w
 
 
 (define render (initialize-window 640 480))
-(wait-for-quit (create-event-ptr)
+(wait-for-quit (create-sdl-event)
                (lambda (event)
                  (sdl-render-present render)
                  (sdl-render-clear render)))
