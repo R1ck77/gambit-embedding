@@ -54,6 +54,7 @@
                                                  " SDL_Window* window =  ___arg3;
 SDL_Renderer *renderer =  ___arg4;
 ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &window, &renderer));"))
+(define sdl-delay (c-lambda (unsigned-int32) void "SDL_Delay"))
 
 
 ;; SDL_Event
