@@ -1,20 +1,13 @@
+(include "common.scm")
+(load "opengl")
 
 (c-declare "#include <SDL.h>")
-(c-declare "#include <GL/gl.h>")
 
 (c-declare "inline static char *convertPointer(const char *string)
 {
     return (char *) string;
 }")
 
-(define-macro (c-constant name type)
-  `((c-lambda () ,type ,(string-append "___return(" name ");"))))
-
-(define-macro (int-c-constant name)
-  `(c-constant ,name int))
-
-(define-macro (uint-c-constant name)
-  `(c-constant ,name unsigned-int32))
 
 ;;; SDL Constants
 (define sdl-init-everything (int-c-constant "SDL_INIT_EVERYTHING"))
@@ -26,8 +19,6 @@
 (define sdl-renderer-accelerated (int-c-constant "SDL_RENDERER_ACCELERATED"))
 (define sdl-quit-const (int-c-constant "SDL_QUIT"))
 
-;; GL Constants
-(define gl-color-buffer-bit (uint-c-constant "GL_COLOR_BUFFER_BIT"))
 
 ;;; SDL procedures
 (define sdl-init (c-lambda (unsigned-int32) int "SDL_Init"))
@@ -78,10 +69,6 @@ ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &w
 (define get-event-type (c-lambda (sdl-event) int "___return(___arg1->type);"))
 (define sdl-poll-event! (c-lambda (sdl-event) void "SDL_PollEvent(___arg1);"))
 
-;; Enough OpenGL calls to show "something"
-(define gl-clear-color (c-lambda (float float float float) void "glClearColor"))
-(define gl-clear (c-lambda (int32) void "glClear"))
-;; glClear(GL_COLOR_BUFFER_BIT)
 
 
 ;; TODO/FIXME unused
