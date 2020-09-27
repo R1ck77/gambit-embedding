@@ -1,5 +1,6 @@
 
 (c-declare "#include <SDL.h>")
+(c-declare "#include <GL/gl.h>")
 
 (c-declare "inline static char *convertPointer(const char *string)
 {
@@ -12,7 +13,10 @@
 (define-macro (int-c-constant name)
   `(c-constant ,name int))
 
-;;; Constants
+(define-macro (uint-c-constant name)
+  `(c-constant ,name unsigned-int32))
+
+;;; SDL Constants
 (define sdl-init-everything (int-c-constant "SDL_INIT_EVERYTHING"))
 (define sdl-init-video (int-c-constant "SDL_INIT_VIDEO"))
 (define sdl-init-audio (int-c-constant "SDL_INIT_AUDIO"))
@@ -22,6 +26,8 @@
 (define sdl-renderer-accelerated (int-c-constant "SDL_RENDERER_ACCELERATED"))
 (define sdl-quit-const (int-c-constant "SDL_QUIT"))
 
+;; GL Constants
+(define gl-color-buffer-bit (uint-c-constant "GL_COLOR_BUFFER_BIT"))
 
 ;;; SDL procedures
 (define sdl-init (c-lambda (unsigned-int32) int "SDL_Init"))
@@ -64,7 +70,7 @@
 SDL_Renderer *renderer =  ___arg4;
 ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &window, &renderer));"))
 (define sdl-delay (c-lambda (unsigned-int32) void "SDL_Delay"))
-
+(define sdl-gl-swap-window (c-lambda (window-ptr) void "SDL_GL_SwapWindow"))
 
 ;; SDL_Event
 (c-define-type sdl-event (pointer (type "SDL_Event") (void)))
@@ -72,6 +78,13 @@ ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &w
 (define get-event-type (c-lambda (sdl-event) int "___return(___arg1->type);"))
 (define sdl-poll-event! (c-lambda (sdl-event) void "SDL_PollEvent(___arg1);"))
 
+;; Enough OpenGL calls to show "something"
+(define gl-clear-color (c-lambda (float float float float) void "glClearColor"))
+(define gl-clear (c-lambda (int32) void "glClear"))
+;; glClear(GL_COLOR_BUFFER_BIT)
+
+
+;; TODO/FIXME unused
 (c-declare "long int scm_free(void *memory) {
     free(memory);
     return 0;
@@ -109,6 +122,16 @@ ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &w
         (intercept-error "Unable to create the renderer %s\n" 3))
       renderer-ptr)))
 
+(define (initialize-opengl-window width height)
+  (initialize-sdl)
+  (let ((window-ptr (sdl-create-window "Test Window" width height)))
+    (when (not window-ptr)
+      (intercept-error "Unable to create the window: %s\n" 2))
+    (let ((gl-context (sdl-gl-create-context window-ptr)))
+      (when (not gl-context)
+        (intercept-error "Unable to create the OpenGL context: %s\n" 3))
+      window-ptr)))
+
 (define (wait-for-quit event callback)
   (sdl-poll-event! event)
   (when (not (= (get-event-type event) sdl-quit-const))
@@ -116,9 +139,11 @@ ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &w
     (wait-for-quit event callback)))
 
 
-(define render (initialize-window 640 480))
+(define window (initialize-opengl-window 640 480))
 (wait-for-quit (create-sdl-event)
                (lambda (event)
-                 (sdl-render-present render)
-                 (sdl-render-clear render)))
+                 (gl-clear-color 0.0 0.0 1.0 1.0)
+                 (gl-clear gl-color-buffer-bit)
+                 (sdl-gl-swap-window window)
+                 #f))
 (sdl-quit)
