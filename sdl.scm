@@ -34,7 +34,7 @@
 (define create-window-ptr (c-lambda () window-ptr "___return(malloc(sizeof(SDL_Window*)));"))
 (define sdl-create-window (c-lambda (char-string int int)
                                     window-ptr
-                                    "___return(SDL_CreateWindow(___arg1, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ___arg2, ___arg3, SDL_WINDOW_SHOWN));"))
+                                    "___return(SDL_CreateWindow(___arg1, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ___arg2, ___arg3, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL));"))
 
 ;; SDL_Renderer
 (c-define-type renderer-ptr (pointer (type "SDL_Renderer") (void)))
@@ -103,8 +103,8 @@ ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &w
 (define (wait-for-quit event callback)
   (sdl-poll-event! event)
   (when (not (= (get-event-type event) sdl-quit-const))
-      (apply callback (list event))
-      (wait-for-quit event callback)))
+    (apply callback (list event))
+    (wait-for-quit event callback)))
 
 
 (define render (initialize-window 640 480))
