@@ -125,8 +125,14 @@ ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &w
     (apply callback (list event))
     (wait-for-quit event callback)))
 
+(define (create-shaders)
+  (display (gl-create-shader gl-vertex-shader))
+  (display "\n")
+  (display (gl-create-shader gl-fragment-shader))
+  (display "\n"))
 
 (define window (initialize-opengl-window 640 480))
+(create-shaders)
 (wait-for-quit (create-sdl-event)
                (lambda (event)
                  (gl-clear-color 0.0 0.0 1.0 1.0)
