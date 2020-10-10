@@ -15,6 +15,8 @@
 (define gl-color-buffer-bit (uint-c-constant "GL_COLOR_BUFFER_BIT"))
 (define gl-vertex-shader (uint-c-constant "GL_VERTEX_SHADER"))
 (define gl-fragment-shader (uint-c-constant "GL_FRAGMENT_SHADER"))
+(define gl-true (int-c-constant "GL_TRUE"))
+(define gl-true (int-c-constant "GL_FALSE"))
 
 ;;; Primitives
 (define gl-points (uint-c-constant "GL_POINTS"))
@@ -36,6 +38,7 @@
 (define gl-get-error (c-lambda () GLenum "glGetError"))
 (define gl-create-program (c-lambda () GLuint "glCreateProgram"))
 (define gl-use-program (c-lambda (GLuint) void "glUseProgram"))
+(define gl-is-program? (c-lambda (GLuint) GLboolean "glIsProgram"))
 (define gl-link-program (c-lambda (GLuint) void "glLinkProgram"))
 (define gl-get-attrib-location (c-lambda (GLuint char-string) GLint "glGetAttribLocation"))
 (define gl-enable-vertex-attrib-array (c-lambda (GLuint) void "glEnableVertexAttribArray"))
