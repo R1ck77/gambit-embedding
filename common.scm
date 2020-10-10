@@ -6,3 +6,6 @@
 
 (define-macro (uint-c-constant name)
   `(c-constant ,name unsigned-int32))
+
+(define-macro (comment . forms)
+  #f)
