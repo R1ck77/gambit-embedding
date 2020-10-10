@@ -70,6 +70,7 @@ glShaderSource(___arg1, 1, shaders, NULL); "))
 (define gl-uniform-matrix-3-fv (c-lambda (GLint GLsizei GLboolean (pointer GLfloat)) void "glUniformMatrix3fv"))
 (define gl-uniform-matrix-4-fv (c-lambda (GLint GLsizei GLboolean (pointer GLfloat)) void "glUniformMatrix4fv"))
 
+;; found in the OpenGL ES3 documentation but not in the current header file
 (comment
  (define gl-uniform-1-ui (c-lambda (GLint GLuint) void "glUniform1ui"))
  (define gl-uniform-2-ui (c-lambda (GLint GLuint GLuint) void "glUniform2ui"))
