@@ -37,6 +37,7 @@
 (define gl-clear (c-lambda (GLbitfield) void "glClear"))
 (define gl-get-error (c-lambda () GLenum "glGetError"))
 (define gl-create-program (c-lambda () GLuint "glCreateProgram")) ; cleanup action
+(define gl-delete-program (c-lambda (GLuint) void "glDeleteProgram"))
 (define gl-use-program (c-lambda (GLuint) void "glUseProgram"))
 (define gl-is-program? (c-lambda (GLuint) GLboolean "glIsProgram"))
 (define gl-link-program (c-lambda (GLuint) void "glLinkProgram"))
