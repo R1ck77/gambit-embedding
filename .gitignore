@@ -1,7 +1,9 @@
 *~
 \#*
 *.o
-*.c
+sdl*.c
+opengl*.c
 *.o1
 *.swp
 demo
+c-demo

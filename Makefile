@@ -45,5 +45,8 @@ sdl.o1.c: sdl.scm
 demo: demo.scm opengl.o1 sdl.o1
 	gsc -exe -o $@  demo.scm
 
+c-demo: c-demo.c
+	gsc -exe c-demo.c 
+
 clean:
-	rm -f *.o *.o1 *.o1.* *.c demo
+	rm -f *.o *.o1 *.o1.* opengl*.c sdl*.c demo
