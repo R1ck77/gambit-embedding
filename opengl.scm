@@ -36,7 +36,7 @@
 (define gl-clear-color (c-lambda (GLfloat GLfloat GLfloat GLfloat) void "glClearColor"))
 (define gl-clear (c-lambda (GLbitfield) void "glClear"))
 (define gl-get-error (c-lambda () GLenum "glGetError"))
-(define gl-create-program (c-lambda () GLuint "glCreateProgram"))
+(define gl-create-program (c-lambda () GLuint "glCreateProgram")) ; cleanup action
 (define gl-use-program (c-lambda (GLuint) void "glUseProgram"))
 (define gl-is-program? (c-lambda (GLuint) GLboolean "glIsProgram"))
 (define gl-link-program (c-lambda (GLuint) void "glLinkProgram"))
@@ -44,7 +44,9 @@
 (define gl-enable-vertex-attrib-array (c-lambda (GLuint) void "glEnableVertexAttribArray"))
 (define gl-disable-vertex-attrib-array (c-lambda (GLuint) void "glDisableVertexAttribArray"))
 (define gl-attach-shader (c-lambda (GLuint GLuint) void "glAttachShader"))
-(define gl-create-shader (c-lambda (GLenum) GLuint "glCreateShader"))
+(define gl-detach-shader (c-lambda (GLuint GLuint) void "glDetachShader"))
+(define gl-delete-shader (c-lambda (GLuint) void "glDeleteShader"))
+(define gl-create-shader (c-lambda (GLenum) GLuint "glCreateShader")) ; cleanup action
 (define gl-shader-source (c-lambda (GLuint char-string) void "const GLchar *shaders[1];
 shaders[0] = ___arg2;
 glShaderSource(___arg1, 1, shaders, NULL); "))
@@ -88,5 +90,32 @@ glShaderSource(___arg1, 1, shaders, NULL); "))
  (define gl-uniform-matrix-2x4-fv (c-lambda (GLint GLsizei GLboolean (pointer GLfloat)) void "glUniformMatrix2x4fv"))
  (define gl-uniform-matrix-4x2-fv (c-lambda (GLint GLsizei GLboolean (pointer GLfloat)) void "glUniformMatrix4x2fv"))
  (define gl-uniform-matrix-3x4-fv (c-lambda (GLint GLsizei GLboolean (pointer GLfloat)) void "glUniformMatrix3x4fv"))
- (define gl-uniform-matrix-4x3-fv (c-lambda (GLint GLsizei GLboolean (pointer GLfloat))void "glUniformMatrix4x3fv")))
+ (define gl-uniform-matrix-4x3-fv (c-lambda (GLint GLsizei GLboolean (pointer GLfloat)) void "glUniformMatrix4x3fv")))
 
+
+(define (opengl-create-shader type code)
+  (let ((shader (gl-create-shader type)))
+    (gl-shader-source shader code)
+    (gl-compile-shader shader)
+    shader))
+
+(define (opengl-create-vertex-shader code)
+  (opengl-create-shader gl-vertex-shader code))
+
+(define (opengl-create-fragment-shader code)
+  (opengl-create-shader gl-fragment-shader code))
+
+(define (opengl-create-program vertex-shader fragment-shader)
+  (let ((program (gl-create-program)))
+    (gl-attach-shader program vertex-shader)
+    (gl-attach-shader program fragment-shader)
+    (gl-link-program program)
+    (gl-detach-shader program vertex-shader)
+    (gl-detach-shader program fragment-shader)
+    program))
+
+(define (opengl-program-from-sources vertex-shader-code fragment-shader-code)
+  (let ((program (opengl-create-program (opengl-create-vertex-shader vertex-shader-code)
+                                        (opengl-create-fragment-shader fragment-shader-code))))
+    (map display (list "Program: " program "\n"))
+    program))
