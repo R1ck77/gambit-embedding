@@ -1,5 +1,4 @@
 (include "common.scm")
-(load "opengl")
 
 (c-declare "#include <SDL.h>")
 
@@ -8,8 +7,7 @@
     return (char *) string;
 }")
 
-
-;;; SDL Constants
+;;; Constants
 (define sdl-init-everything (int-c-constant "SDL_INIT_EVERYTHING"))
 (define sdl-init-video (int-c-constant "SDL_INIT_VIDEO"))
 (define sdl-init-audio (int-c-constant "SDL_INIT_AUDIO"))
@@ -20,7 +18,7 @@
 (define sdl-quit-const (int-c-constant "SDL_QUIT"))
 
 
-;;; SDL procedures
+;;; Functions
 (define sdl-init (c-lambda (unsigned-int32) int "SDL_Init"))
 (define sdl-quit (c-lambda () void "SDL_Quit"))
 (define sdl-log (c-lambda (char-string char-string) void "SDL_Log"))
@@ -124,32 +122,3 @@ ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &w
   (when (not (= (get-event-type event) sdl-quit-const))
     (apply callback (list event))
     (wait-for-quit event callback)))
-
-
-(define triangle-vertex-shader "uniform mat4 uMVPMatrix;
-attribute vec4 vPosition;
-
-void main() {
-  gl_Position = uMVPMatrix * vPosition;
-}")
-
-(define triangle-fragment-shader "precision mediump float;
-uniform vec4 vColor;
-
-void main() {
-  gl_FragColor = vColor;
-}")
-
-(define (create-shaders)
-  (display (opengl-program-from-sources triangle-vertex-shader triangle-fragment-shader))
-  (display "\n"))
-
-(define window (initialize-opengl-window 640 480))
-(create-shaders)
-(wait-for-quit (create-sdl-event)
-               (lambda (event)                 
-                 (gl-clear-color 0.0 0.0 1.0 1.0)
-                 (gl-clear gl-color-buffer-bit)
-                 (sdl-gl-swap-window window)
-                 #f))
-(sdl-quit)
