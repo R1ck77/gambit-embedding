@@ -10,9 +10,9 @@ CFLAGS=$(CFLAGS_SDL) $(CFLAGS_OPENGL)
 LDFLAGS= $(LDFLAGS_SDL) $(LDFLAGS_OPENGL)
 
 run: all
-	./demo
+	./c-demo
 
-all: demo
+all: c-demo
 
 ## This blocks repeats with SDL!
 opengl.o1: opengl.o opengl.o1.o
@@ -42,8 +42,8 @@ sdl.o1.c: sdl.scm
 	gsc -link -flat -o $@ $^
 ## end of duplicated bloc
 
-demo: demo.scm opengl.o1 sdl.o1
-	gsc -exe -o $@  demo.scm
+#demo: demo.scm opengl.o1 sdl.o1
+#	gsc -exe -o $@  demo.scm
 
 demo.c: demo.scm opengl.o1 sdl.o1
 	gsc -link  $<
