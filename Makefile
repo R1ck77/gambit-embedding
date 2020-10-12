@@ -45,8 +45,14 @@ sdl.o1.c: sdl.scm
 demo: demo.scm opengl.o1 sdl.o1
 	gsc -exe -o $@  demo.scm
 
-c-demo: c-demo.c
-	gsc -exe -cc-options "-g" c-demo.c 
+demo.c: demo.scm #opengl.o1 sdl.o1
+	gsc -link  $<
+
+c-demo: demo.c
+	gcc -o $@ -I/home/dimeo/local/gambit/include c-demo.c \
+		-D___LIBRARY   \
+		demo.c demo_.c \
+		-L/home/dimeo/local/gambit/lib -lgambit -lm -ldl -lutil
 
 clean:
-	rm -f *.o *.o1 *.o1.* opengl*.c sdl*.c demo c-demo
+	rm -f *.o *.o1 *.o1.* opengl*.c sdl*.c demo c-demo demo*.c

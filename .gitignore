@@ -6,4 +6,5 @@ opengl*.c
 *.o1
 *.swp
 demo
+demo*.c
 c-demo

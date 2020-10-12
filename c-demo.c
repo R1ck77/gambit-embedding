@@ -2,11 +2,11 @@
 #define ___VERSION 409003
 #include <gambit.h>
 
-//#define SCHEME_LIBRARY_LINKER ___LNK_demo__
+#define SCHEME_LIBRARY_LINKER ___LNK_demo__
 
-//___BEGIN_C_LINKAGE
-//extern ___mod_or_lnk SCHEME_LIBRARY_LINKER (___global_state);
-//___END_C_LINKAGE
+___BEGIN_C_LINKAGE
+extern ___mod_or_lnk SCHEME_LIBRARY_LINKER (___global_state);
+___END_C_LINKAGE
 
 
 int main(void) {
@@ -14,7 +14,7 @@ int main(void) {
   ___setup_params_reset (&setup_params);
 
   setup_params.version = ___VERSION;
-  //  setup_params.linker  = SCHEME_LIBRARY_LINKER;
+  setup_params.linker  = SCHEME_LIBRARY_LINKER;
 
   ___setup (&setup_params);
 
