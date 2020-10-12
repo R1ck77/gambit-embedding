@@ -45,7 +45,7 @@ sdl.o1.c: sdl.scm
 demo: demo.scm opengl.o1 sdl.o1
 	gsc -exe -o $@  demo.scm
 
-demo.c: demo.scm #opengl.o1 sdl.o1
+demo.c: demo.scm opengl.o1 sdl.o1
 	gsc -link  $<
 
 c-demo: demo.c
