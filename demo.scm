@@ -30,5 +30,9 @@ void main() {
     (gl-delete-program program)
     (sdl-quit)))
 
-;(demo-function 800 600)
+(c-define (demo-function-c width height) (int int) void
+          "demo_function"
+          ""
+          (demo-function width height))
+
 

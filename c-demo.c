@@ -8,6 +8,7 @@ ___BEGIN_C_LINKAGE
 extern ___mod_or_lnk SCHEME_LIBRARY_LINKER (___global_state);
 ___END_C_LINKAGE
 
+extern void demo_function(int, int);
 
 int main(void) {
   ___setup_params_struct setup_params;
@@ -18,7 +19,7 @@ int main(void) {
 
   ___setup (&setup_params);
 
-  // Meat
+  demo_function(800, 600);
 
   ___cleanup ();
 
