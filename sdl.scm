@@ -67,17 +67,6 @@ ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &w
 (define get-event-type (c-lambda (sdl-event) int "___return(___arg1->type);"))
 (define sdl-poll-event! (c-lambda (sdl-event) void "SDL_PollEvent(___arg1);"))
 
-
-
-;; TODO/FIXME unused
-(c-declare "long int scm_free(void *memory) {
-    free(memory);
-    return 0;
-}")
-
-(define-macro (comment . forms)
-  #f)
-
 (define (initialize-sdl)
   (when (not (= 0 (sdl-init sdl-init-everything)))
     (sdl-log  "Some error happened %s!\n" (sdl-get-error))

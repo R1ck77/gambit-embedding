@@ -1,6 +1,7 @@
 (include "common.scm")
 
-(c-declare "#include <GLES2/gl2.h>")
+(c-declare "#include <GLES2/gl2.h>
+#include <stdlib.h>")
 
 (c-define-type GLenum unsigned-int)
 (c-define-type GLuint unsigned-int)
@@ -10,6 +11,7 @@
 (c-define-type GLsizei int)
 (c-define-type GLchar char)
 (c-define-type GLboolean unsigned-char)
+(c-define-type GLfloat-pointer (pointer "GLfloat" (void) "scm_free"))
 
 ;;; Constants
 (define gl-color-buffer-bit (uint-c-constant "GL_COLOR_BUFFER_BIT"))
@@ -64,17 +66,21 @@ glShaderSource(___arg1, 1, shaders, NULL); "))
 (define gl-uniform-2-i (c-lambda (GLint GLint GLint) void "glUniform2i"))
 (define gl-uniform-3-i (c-lambda (GLint GLint GLint GLint) void "glUniform3i"))
 (define gl-uniform-4-i (c-lambda (GLint GLint GLint GLint GLint) void "glUniform4i"))
-(define gl-uniform-1-fv (c-lambda (GLint GLsizei (pointer GLfloat)) void "glUniform1fv"))
-(define gl-uniform-2-fv (c-lambda (GLint GLsizei (pointer GLfloat)) void "glUniform2fv"))
-(define gl-uniform-3-fv (c-lambda (GLint GLsizei (pointer GLfloat)) void "glUniform3fv"))
-(define gl-uniform-4-fv (c-lambda (GLint GLsizei (pointer GLfloat)) void "glUniform4fv"))
+(define gl-uniform-1-fv (c-lambda (GLint GLsizei GLfloat-pointer) void "glUniform1fv"))
+(define gl-uniform-2-fv (c-lambda (GLint GLsizei GLfloat-pointer) void "glUniform2fv"))
+(define gl-uniform-3-fv (c-lambda (GLint GLsizei GLfloat-pointer) void "glUniform3fv"))
+(define gl-uniform-4-fv (c-lambda (GLint GLsizei GLfloat-pointer) void "glUniform4fv"))
 (define gl-uniform-1-iv (c-lambda (GLint GLsizei (pointer GLint)) void "glUniform1iv"))
 (define gl-uniform-2-iv (c-lambda (GLint GLsizei (pointer GLint)) void "glUniform2iv"))
 (define gl-uniform-3-iv (c-lambda (GLint GLsizei (pointer GLint)) void "glUniform3iv"))
 (define gl-uniform-4-iv (c-lambda (GLint GLsizei (pointer GLint)) void "glUniform4iv"))
-(define gl-uniform-matrix-2-fv (c-lambda (GLint GLsizei GLboolean (pointer GLfloat)) void "glUniformMatrix2fv"))
-(define gl-uniform-matrix-3-fv (c-lambda (GLint GLsizei GLboolean (pointer GLfloat)) void "glUniformMatrix3fv"))
-(define gl-uniform-matrix-4-fv (c-lambda (GLint GLsizei GLboolean (pointer GLfloat)) void "glUniformMatrix4fv"))
+(define gl-uniform-matrix-2-fv (c-lambda (GLint GLsizei GLboolean GLfloat-pointer) void "glUniformMatrix2fv"))
+(define gl-uniform-matrix-3-fv (c-lambda (GLint GLsizei GLboolean GLfloat-pointer) void "glUniformMatrix3fv"))
+(define gl-uniform-matrix-4-fv (c-lambda (GLint GLsizei GLboolean GLfloat-pointer) void "glUniformMatrix4fv"))
+(define gl-vertex-attrib-pointer (c-lambda (GLuint GLint GLenum GLboolean GLsizei (pointer void)) void "glVertexAttribPointer"))
+(define gl-enable-vertex-attrib-array (c-lambda (GLuint) void "glEnableVertexAttribArray"))
+(define gl-disable-vertex-attrib-array (c-lambda (GLuint) void "glDisableVertexAttribArray"))
+(define gl-get-attrib-location (c-lambda (GLuint char-string) GLint "glGetAttribLocation"))
 
 ;; found in the OpenGL ES3 documentation but not in the current header file
 (comment
@@ -86,13 +92,12 @@ glShaderSource(___arg1, 1, shaders, NULL); "))
  (define gl-uniform-2-uiv (c-lambda (GLint GLsizei (pointer GLuint)) void "glUniform2uiv"))
  (define gl-uniform-3-uiv (c-lambda (GLint GLsizei (pointer GLuint)) void "glUniform3uiv"))
  (define gl-uniform-4-uiv (c-lambda (GLint GLsizei (pointer GLuint)) void "glUniform4uiv"))
- (define gl-uniform-matrix-2x3-fv (c-lambda (GLint GLsizei GLboolean (pointer GLfloat)) void "glUniformMatrix2x3fv"))
- (define gl-uniform-matrix-3x2-fv (c-lambda (GLint GLsizei GLboolean (pointer GLfloat)) void "glUniformMatrix3x2fv"))
- (define gl-uniform-matrix-2x4-fv (c-lambda (GLint GLsizei GLboolean (pointer GLfloat)) void "glUniformMatrix2x4fv"))
- (define gl-uniform-matrix-4x2-fv (c-lambda (GLint GLsizei GLboolean (pointer GLfloat)) void "glUniformMatrix4x2fv"))
- (define gl-uniform-matrix-3x4-fv (c-lambda (GLint GLsizei GLboolean (pointer GLfloat)) void "glUniformMatrix3x4fv"))
- (define gl-uniform-matrix-4x3-fv (c-lambda (GLint GLsizei GLboolean (pointer GLfloat)) void "glUniformMatrix4x3fv")))
-
+ (define gl-uniform-matrix-2x3-fv (c-lambda (GLint GLsizei GLboolean GLfloat-pointer) void "glUniformMatrix2x3fv"))
+ (define gl-uniform-matrix-3x2-fv (c-lambda (GLint GLsizei GLboolean GLfloat-pointer) void "glUniformMatrix3x2fv"))
+ (define gl-uniform-matrix-2x4-fv (c-lambda (GLint GLsizei GLboolean GLfloat-pointer) void "glUniformMatrix2x4fv"))
+ (define gl-uniform-matrix-4x2-fv (c-lambda (GLint GLsizei GLboolean GLfloat-pointer) void "glUniformMatrix4x2fv"))
+ (define gl-uniform-matrix-3x4-fv (c-lambda (GLint GLsizei GLboolean GLfloat-pointer) void "glUniformMatrix3x4fv"))
+ (define gl-uniform-matrix-4x3-fv (c-lambda (GLint GLsizei GLboolean GLfloat-pointer) void "glUniformMatrix4x3fv")))
 
 (define (opengl-create-shader type code)
   (let ((shader (gl-create-shader type)))
@@ -117,4 +122,14 @@ glShaderSource(___arg1, 1, shaders, NULL); "))
 
 (define (opengl-program-from-sources vertex-shader-code fragment-shader-code)
   (opengl-create-program (opengl-create-vertex-shader vertex-shader-code)
-                                        (opengl-create-fragment-shader fragment-shader-code)))
+                         (opengl-create-fragment-shader fragment-shader-code)))
+
+
+(define opengl-create-color (c-lambda (GLfloat GLfloat GLfloat GLfloat)
+                               GLfloat-pointer
+                               "GLfloat *result = (GLfloat*) calloc(4, sizeof(GLfloat));
+result[0] = ___arg1;
+result[1] = ___arg2;
+result[2] = ___arg3;
+result[3] = ___arg4;
+___return(result);"))
