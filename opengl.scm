@@ -11,14 +11,29 @@
 (c-define-type GLsizei int)
 (c-define-type GLchar char)
 (c-define-type GLboolean unsigned-char)
-(c-define-type GLfloat-pointer (pointer "GLfloat" (void) "scm_free"))
+(c-define-type GLfloat-pointer (pointer "GLfloat" GLfloat* "scm_free"))
+(c-define-type vertex-data (pointer "void" (void* GLfloat*) "scm_free"))
 
 ;;; Constants
 (define gl-color-buffer-bit (uint-c-constant "GL_COLOR_BUFFER_BIT"))
 (define gl-vertex-shader (uint-c-constant "GL_VERTEX_SHADER"))
 (define gl-fragment-shader (uint-c-constant "GL_FRAGMENT_SHADER"))
+(define gl-array-buffer (int-c-constant "GL_ARRAY_BUFFER"))
+;; Booleans
 (define gl-true (int-c-constant "GL_TRUE"))
-(define gl-true (int-c-constant "GL_FALSE"))
+(define gl-false (int-c-constant "GL_FALSE"))
+;; Types
+(define gl-byte (int-c-constant "GL_BYTE"))
+(define gl-unsigned-byte (int-c-constant "GL_UNSIGNED_BYTE"))
+(define gl-short (int-c-constant "GL_SHORT"))
+(define gl-unsigned-short (int-c-constant "GL_UNSIGNED_SHORT"))
+(define gl-int (int-c-constant "GL_INT"))
+(define gl-unsigned-int (int-c-constant "GL_UNSIGNED_INT"))
+(define gl-float (int-c-constant "GL_FLOAT"))
+(define gl-fixed (int-c-constant "GL_FIXED"))
+;(define gl-half-float (int-c-constant "GL_HALF_FLOAT"))
+;(define gl-int-2-10-10-10-rev (int-c-constant "GL_INT_2_10_10_10_REV"))
+;(define gl-unsigned-int-2-10-10-10-rev (int-c-constant "GL_UNSIGNED_INT_2_10_10_10_REV"))
 
 ;;; Primitives
 (define gl-points (uint-c-constant "GL_POINTS"))
@@ -54,7 +69,7 @@
 shaders[0] = ___arg2;
 glShaderSource(___arg1, 1, shaders, NULL); "))
 (define gl-compile-shader (c-lambda (GLuint) void "glCompileShader"))
-(define gl-vertex-attrib-pointer (c-lambda (GLuint GLint GLenum GLboolean GLsizei (pointer void)) void "glVertexAttribPointer"))
+(define gl-vertex-attrib-pointer (c-lambda (GLuint GLint GLenum GLboolean GLsizei vertex-data) void "glVertexAttribPointer"))
 (define gl-get-uniform-location (c-lambda (GLuint char-string) GLint "glGetUniformLocation"))
 (define gl-draw-arrays (c-lambda (GLenum GLint GLsizei) void "glDrawArrays"))
 
@@ -124,12 +139,22 @@ glShaderSource(___arg1, 1, shaders, NULL); "))
   (opengl-create-program (opengl-create-vertex-shader vertex-shader-code)
                          (opengl-create-fragment-shader fragment-shader-code)))
 
+(c-define (get-float-element list index) (scheme-object int) float
+          "get_float_element"
+          ""
+          (list-ref list index))
 
-(define opengl-create-color (c-lambda (GLfloat GLfloat GLfloat GLfloat)
-                               GLfloat-pointer
-                               "GLfloat *result = (GLfloat*) calloc(4, sizeof(GLfloat));
-result[0] = ___arg1;
-result[1] = ___arg2;
-result[2] = ___arg3;
-result[3] = ___arg4;
+(define __opengl-create-float-array (c-lambda (scheme-object int)
+                                            GLfloat-pointer
+                                            "
+GLfloat *result = calloc(___arg2, sizeof(GLfloat));
+for(int i = 0; i < ___arg2; ++i) {
+    result[i] = get_float_element(___arg1, i);
+}
 ___return(result);"))
+
+(define (opengl-create-float-array float-list)
+  (__opengl-create-float-array float-list (length float-list)))
+
+(define (opengl-create-color r g b a)
+  (opengl-create-float-array (list r g b a)))
