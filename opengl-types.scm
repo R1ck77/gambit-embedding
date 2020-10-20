@@ -93,5 +93,11 @@ ___return(result);"))
 (define (opengl-create-char-array char-list)
   (__opengl-create-char-array char-list (length char-list)))
 
+;;; TODO/FIXE extra
+(define opengl-create-char-array-size (c-lambda (int) GLchar-pointer
+                                                "___return((GLchar*) malloc(___arg1));"))
+
+(define opengl-char-array-as-string (c-lambda (GLchar-pointer) char-string
+                                              "___return(___arg1);"))
 
 (c-define-type vertex-data (pointer "void" (void* GLfloat* GLint*) "scm_free"))

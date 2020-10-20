@@ -71,6 +71,14 @@
   (let ((result (opengl-create-int-array (list 0))))
     (__gl-get-program-iv program parameter result)
     (get-GLint-pointer-element result 0)))
+(define __gl-get-program-info-log (c-lambda (GLuint GLsizei GLsizei-pointer GLchar-pointer) void "glGetProgramInfoLog"))
+;;; TODO/FIXME hard coded max length. Query to get the correct one!
+(define (gl-get-program-info-log program)
+  (let* ((max-char-size 10240)
+         (result (opengl-create-char-array-size 10240)))
+    (opengl-char-array-as-string
+     (__gl-get-program-info-log program max-char-size 0 result)))) 
+
 (define gl-validate-program (c-lambda (GLuint) void "glValidateProgram"))
 (define gl-get-attrib-location (c-lambda (GLuint char-string) GLint "glGetAttribLocation"))
 (define gl-enable-vertex-attrib-array (c-lambda (GLuint) void "glEnableVertexAttribArray"))
