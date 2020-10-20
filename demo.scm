@@ -1,32 +1,20 @@
 (load "sdl")
-(load "opengl")
+(load "triangle-example")
 
-(define triangle-vertex-shader "uniform mat4 uMVPMatrix;
-attribute vec4 vPosition;
-
-void main() {
-  gl_Position = uMVPMatrix * vPosition;
-}")
-
-(define triangle-fragment-shader "precision mediump float;
-uniform vec4 vColor;
-
-void main() {
-  gl_FragColor = vColor;
-}")
-
-(define (update-function window event)
+(define (update-function window event program)
+  (map display (list "The program is: " program (newline)))
   (gl-clear-color 0.0 0.0 1.0 1.0)
   (gl-clear gl-color-buffer-bit)
+  (draw-triangle program (opengl-matrix-identity))
   (sdl-gl-swap-window window))
 
 
 (define (demo-function width height)
   (let ((window (initialize-opengl-window width height))
-        (program (opengl-program-from-sources triangle-vertex-shader triangle-fragment-shader)))
+        (program (compile-program)))
     (wait-for-quit (create-sdl-event)
                    (lambda (event)
-                     (update-function window event)))
+                     (update-function window event program)))
     (gl-delete-program program)
     (sdl-quit)))
 
@@ -34,5 +22,3 @@ void main() {
           "demo_function"
           ""
           (demo-function width height))
-
-

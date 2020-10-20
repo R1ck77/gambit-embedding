@@ -3,16 +3,7 @@
 (c-declare "#include <GLES2/gl2.h>
 #include <stdlib.h>")
 
-(c-define-type GLenum unsigned-int)
-(c-define-type GLuint unsigned-int)
-(c-define-type GLint int)
-(c-define-type GLfloat float)
-(c-define-type GLbitfield unsigned-int)
-(c-define-type GLsizei int)
-(c-define-type GLchar char)
-(c-define-type GLboolean unsigned-char)
-(c-define-type GLfloat-pointer (pointer "GLfloat" GLfloat* "scm_free"))
-(c-define-type vertex-data (pointer "void" (void* GLfloat*) "scm_free"))
+(include "opengl-types.scm")
 
 ;;; Constants
 (define gl-color-buffer-bit (uint-c-constant "GL_COLOR_BUFFER_BIT"))
@@ -49,6 +40,23 @@
 (define gl-invalid-operation (uint-c-constant "GL_INVALID_OPERATION"))
 (define gl-no-error (uint-c-constant "GL_NO_ERROR"))
 
+;; glGetProgramiv parameters
+(define gl-active-attributes (uint-c-constant "GL_ACTIVE_ATTRIBUTES"))
+(define gl-active-attribute-max-length (uint-c-constant "GL_ACTIVE_ATTRIBUTE_MAX_LENGTH"))
+(define gl-active-uniforms (uint-c-constant "GL_ACTIVE_UNIFORMS"))
+;;(define gl-active-uniform-blocks (uint-c-constant "GL_ACTIVE_UNIFORM_BLOCKS"))
+;;(define gl-active-uniform-block-max-name-length (uint-c-constant "GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH"))
+(define gl-active-uniform-max-length (uint-c-constant "GL_ACTIVE_UNIFORM_MAX_LENGTH"))
+(define gl-attached-shaders (uint-c-constant "GL_ATTACHED_SHADERS"))
+(define gl-delete-status (uint-c-constant "GL_DELETE_STATUS"))
+(define gl-info-log-length (uint-c-constant "GL_INFO_LOG_LENGTH"))
+(define gl-link-status (uint-c-constant "GL_LINK_STATUS"))
+;;(define gl-program-binary-retrievable-hint (uint-c-constant "GL_PROGRAM_BINARY_RETRIEVABLE_HINT"))
+;;(define gl-transform-feedback-buffer-mode (uint-c-constant "GL_TRANSFORM_FEEDBACK_BUFFER_MODE"))
+;;(define gl-transform-feedback-varyings (uint-c-constant "GL_TRANSFORM_FEEDBACK_VARYINGS"))
+;;(define gl-transform-feedback-varying-max-length (uint-c-constant "GL_TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH"))
+(define gl-validate-status (uint-c-constant "GL_VALIDATE_STATUS"))
+
 ;;; Methods
 (define gl-clear-color (c-lambda (GLfloat GLfloat GLfloat GLfloat) void "glClearColor"))
 (define gl-clear (c-lambda (GLbitfield) void "glClear"))
@@ -58,6 +66,12 @@
 (define gl-use-program (c-lambda (GLuint) void "glUseProgram"))
 (define gl-is-program? (c-lambda (GLuint) GLboolean "glIsProgram"))
 (define gl-link-program (c-lambda (GLuint) void "glLinkProgram"))
+(define __gl-get-program-iv (c-lambda (GLuint GLenum GLint-pointer) void "glGetProgramiv"))
+(define (gl-get-program-iv program parameter)
+  (let ((result (opengl-create-int-array (list 0))))
+    (__gl-get-program-iv program parameter result)
+    (get-GLint-pointer-element result 0)))
+(define gl-validate-program (c-lambda (GLuint) void "glValidateProgram"))
 (define gl-get-attrib-location (c-lambda (GLuint char-string) GLint "glGetAttribLocation"))
 (define gl-enable-vertex-attrib-array (c-lambda (GLuint) void "glEnableVertexAttribArray"))
 (define gl-disable-vertex-attrib-array (c-lambda (GLuint) void "glDisableVertexAttribArray"))
@@ -139,22 +153,11 @@ glShaderSource(___arg1, 1, shaders, NULL); "))
   (opengl-create-program (opengl-create-vertex-shader vertex-shader-code)
                          (opengl-create-fragment-shader fragment-shader-code)))
 
-(c-define (get-float-element list index) (scheme-object int) float
-          "get_float_element"
-          ""
-          (list-ref list index))
-
-(define __opengl-create-float-array (c-lambda (scheme-object int)
-                                            GLfloat-pointer
-                                            "
-GLfloat *result = calloc(___arg2, sizeof(GLfloat));
-for(int i = 0; i < ___arg2; ++i) {
-    result[i] = get_float_element(___arg1, i);
-}
-___return(result);"))
-
-(define (opengl-create-float-array float-list)
-  (__opengl-create-float-array float-list (length float-list)))
-
 (define (opengl-create-color r g b a)
   (opengl-create-float-array (list r g b a)))
+
+(define (opengl-matrix-identity)
+  (opengl-create-float-array (list 1.0 0.0 0.0 0.0
+                                   0.0 1.0 0.0 0.0
+                                   0.0 0.0 1.0 0.0
+                                   0.0 0.0 0.0 1.0)))
