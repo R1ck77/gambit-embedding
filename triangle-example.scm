@@ -34,8 +34,11 @@ void main() {
   (let ((program (opengl-program-from-sources vertex-shader fragment-shader)))
     (gl-validate-program program)
     (if (= gl-false (gl-get-program-iv program gl-validate-status))
-        (display (gl-get-program-info-log program))
-        (error "program not validated"))
+        (begin
+          (display "Program not validated\n")
+          (display "The infolog content is:\n")
+          (display (gl-get-program-info-log program))
+          (error "illegal state")))
     program))
 
 ;; TODO/FIXME missing free

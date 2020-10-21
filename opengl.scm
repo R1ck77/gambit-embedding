@@ -1,7 +1,9 @@
 (include "common.scm")
 
 (c-declare "#include <GLES2/gl2.h>
-#include <stdlib.h>")
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>")
 
 (include "opengl-types.scm")
 
@@ -71,14 +73,19 @@
   (let ((result (opengl-create-int-array (list 0))))
     (__gl-get-program-iv program parameter result)
     (get-GLint-pointer-element result 0)))
-(define __gl-get-program-info-log (c-lambda (GLuint GLsizei GLsizei-pointer GLchar-pointer) void "glGetProgramInfoLog"))
-;;; TODO/FIXME hard coded max length. Query to get the correct one!
+(define __gl-get-program-info-log (c-lambda (GLuint) GLchar-pointer "
+   int length[0];
+   glGetProgramiv(___arg1, GL_INFO_LOG_LENGTH, length);
+   if(length[0] > 1) {
+     char *result = calloc(length[0], sizeof(GLchar));
+     glGetProgramInfoLog(___arg1, length[0], NULL, result);
+     ___return(result);
+   } else {
+     ___return(strdup(\"\"));
+   }"))
 (define (gl-get-program-info-log program)
-  (let* ((max-char-size 10240)
-         (result (opengl-create-char-array-size 10240)))
-    (opengl-char-array-as-string
-     (__gl-get-program-info-log program max-char-size 0 result)))) 
-
+  (opengl-char-array-as-string
+   (__gl-get-program-info-log program)))
 (define gl-validate-program (c-lambda (GLuint) void "glValidateProgram"))
 (define gl-get-attrib-location (c-lambda (GLuint char-string) GLint "glGetAttribLocation"))
 (define gl-enable-vertex-attrib-array (c-lambda (GLuint) void "glEnableVertexAttribArray"))

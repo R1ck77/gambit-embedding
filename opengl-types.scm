@@ -61,6 +61,11 @@ ___return(result);"))
           ""
           (list-ref list index))
 
+;;; TODO/FIXE extra
+(define opengl-create-sizei-array-size (c-lambda (int) GLsizei-pointer
+                                                "___return((GLsizei*) malloc(___arg1));"))
+
+
 (define __opengl-create-sizei-array (c-lambda (scheme-object int)
                                             GLsizei-pointer
                                             "
@@ -98,6 +103,7 @@ ___return(result);"))
                                                 "___return((GLchar*) malloc(___arg1));"))
 
 (define opengl-char-array-as-string (c-lambda (GLchar-pointer) char-string
-                                              "___return(___arg1);"))
+                                              "fprintf(stderr, \"CONTENT: '%s'\\n\", ___arg1);
+___return(___arg1);"))
 
 (c-define-type vertex-data (pointer "void" (void* GLfloat* GLint*) "scm_free"))
