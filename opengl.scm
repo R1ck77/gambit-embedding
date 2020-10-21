@@ -42,7 +42,7 @@
 (define gl-invalid-operation (uint-c-constant "GL_INVALID_OPERATION"))
 (define gl-no-error (uint-c-constant "GL_NO_ERROR"))
 
-;; glGetProgramiv parameters
+;; glGetProgramiv/Shaderiv parameters
 (define gl-active-attributes (uint-c-constant "GL_ACTIVE_ATTRIBUTES"))
 (define gl-active-attribute-max-length (uint-c-constant "GL_ACTIVE_ATTRIBUTE_MAX_LENGTH"))
 (define gl-active-uniforms (uint-c-constant "GL_ACTIVE_UNIFORMS"))
@@ -58,6 +58,9 @@
 ;;(define gl-transform-feedback-varyings (uint-c-constant "GL_TRANSFORM_FEEDBACK_VARYINGS"))
 ;;(define gl-transform-feedback-varying-max-length (uint-c-constant "GL_TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH"))
 (define gl-validate-status (uint-c-constant "GL_VALIDATE_STATUS"))
+(define gl-shader-type (uint-c-constant "GL_SHADER_TYPE"))
+(define gl-compile-status (uint-c-constant "GL_COMPILE_STATUS"))
+(define gl-shader-source-length (uint-c-constant "GL_SHADER_SOURCE_LENGTH"))
 
 ;;; Methods
 (define gl-clear-color (c-lambda (GLfloat GLfloat GLfloat GLfloat) void "glClearColor"))
@@ -68,6 +71,7 @@
 (define gl-use-program (c-lambda (GLuint) void "glUseProgram"))
 (define gl-is-program? (c-lambda (GLuint) GLboolean "glIsProgram"))
 (define gl-link-program (c-lambda (GLuint) void "glLinkProgram"))
+
 (define __gl-get-program-iv (c-lambda (GLuint GLenum GLint-pointer) void "glGetProgramiv"))
 (define (gl-get-program-iv program parameter)
   (let ((result (opengl-create-int-array (list 0))))
@@ -86,6 +90,29 @@
 (define (gl-get-program-info-log program)
   (opengl-char-array-as-string
    (__gl-get-program-info-log program)))
+
+(define __gl-get-shader-iv (c-lambda (GLuint GLenum GLint-pointer) void "glGetShaderiv"))
+(define (gl-get-shader-iv shader parameter)
+  (let ((result (opengl-create-int-array (list 0))))
+    (__gl-get-shader-iv shader parameter result)
+    (get-GLint-pointer-element result 0)))
+(define __gl-get-shader-info-log (c-lambda (GLuint) GLchar-pointer "
+   int length[0];
+   glGetShaderiv(___arg1, GL_INFO_LOG_LENGTH, length);
+   if(length[0] > 1) {
+     char *result = calloc(length[0], sizeof(GLchar));
+     glGetShaderInfoLog(___arg1, length[0], NULL, result);
+     ___return(result);
+   } else {
+     ___return(strdup(\"\"));
+   }"))
+(define (gl-get-shader-info-log shader)
+  (opengl-char-array-as-string
+   (__gl-get-shader-info-log shader)))
+
+
+
+
 (define gl-validate-program (c-lambda (GLuint) void "glValidateProgram"))
 (define gl-get-attrib-location (c-lambda (GLuint char-string) GLint "glGetAttribLocation"))
 (define gl-enable-vertex-attrib-array (c-lambda (GLuint) void "glEnableVertexAttribArray"))
@@ -147,6 +174,14 @@ glShaderSource(___arg1, 1, shaders, NULL); "))
   (let ((shader (gl-create-shader type)))
     (gl-shader-source shader code)
     (gl-compile-shader shader)
+    (if (not (= gl-true (gl-get-shader-iv shader gl-compile-status)))
+        (begin
+          (display "For shader:\n")
+          (display code)
+          (display (newline))
+          (display (gl-get-shader-info-log shader))
+          (display (newline))
+          (error "Shader not compiled correctly!")))
     shader))
 
 (define (opengl-create-vertex-shader code)
