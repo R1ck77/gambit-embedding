@@ -1,13 +1,15 @@
 (load "opengl")
 
-(define vertex-shader "uniform mat4 uMVPMatrix;
+(define vertex-shader "#version 100
+uniform mat4 uMVPMatrix;
 attribute vec4 vPosition;
 
 void main() {
   gl_Position = uMVPMatrix * vPosition;
 }")
 
-(define fragment-shader "precision mediump float;
+(define fragment-shader "#version 100
+precision mediump float;
 uniform vec4 vColor;
 
 void main() {
@@ -35,9 +37,9 @@ void main() {
     (gl-validate-program program)
     (if (= gl-false (gl-get-program-iv program gl-validate-status))
         (begin
-          (display "Program not validated\n")
-          (display "The infolog content is:\n")
-          (display (gl-get-program-info-log program))
+          (println "Program not validated")
+          (println "The infolog content is:")
+          (println (gl-get-program-info-log program))
           (error "illegal state")))
     program))
 
@@ -47,11 +49,17 @@ void main() {
   (let ((position-handle (gl-get-attrib-location program "vPosition"))
         (mvp-matrix-location (gl-get-uniform-location program "uMVPMatrix"))
         (vColor-location (gl-get-uniform-location program "vColor")))
-    (map display (list "The position handle is: " position-handle (newline)))
+    (println "The position handle is: " position-handle "\n")
     (gl-enable-vertex-attrib-array position-handle)
-    (gl-vertex-attrib-pointer position-handle coords-per-vertex gl-float false 12 triangle-coords-buffer)
+    (gl-vertex-attrib-pointer position-handle coords-per-vertex gl-float (integer->char gl-false) 12 triangle-coords-buffer)
     (gl-uniform-4-fv vColor-location 1 (apply opengl-create-color color))
-    (gl-uniform-matrix-4-fv mvp-matrix-location 1 false mvp-matrix)
+    (gl-uniform-matrix-4-fv mvp-matrix-location
+                            1
+                            (integer->char gl-false)
+                            (opengl-create-float-array (list 1.0 0.0 0.0 0.0
+                                                             0.0 1.0 0.0 0.0
+                                                             0.0 0.0 1.0 0.0
+                                                             0.0 0.0 0.0 1.0)))
     (gl-draw-arrays gl-triangles 0 3)
     (gl-disable-vertex-attrib-array position-handle)))
 
