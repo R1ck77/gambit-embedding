@@ -52,13 +52,7 @@ void main() {
     (gl-enable-vertex-attrib-array position-handle)
     (gl-vertex-attrib-pointer position-handle coords-per-vertex gl-float (integer->char gl-false) 12 triangle-coords-buffer)
     (gl-uniform-4-fv vColor-location 1 (apply opengl-create-color color))
-    (gl-uniform-matrix-4-fv mvp-matrix-location
-                            1
-                            (integer->char gl-false)
-                            (opengl-create-float-array (list 1.0 0.0 0.0 0.0
-                                                             0.0 1.0 0.0 0.0
-                                                             0.0 0.0 1.0 0.0
-                                                             0.0 0.0 0.0 1.0)))
+    (gl-uniform-matrix-4-fv mvp-matrix-location 1 (integer->char gl-false) mvp-matrix)
     (gl-draw-arrays gl-triangles 0 3)
     (gl-disable-vertex-attrib-array position-handle)))
 
