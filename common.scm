@@ -17,3 +17,10 @@
     return 0;
 }")
 
+(define (print . args)
+  (map display args))
+
+(define (println . args)
+  (map display args)
+  (newline))
+
