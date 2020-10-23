@@ -49,7 +49,6 @@ void main() {
   (let ((position-handle (gl-get-attrib-location program "vPosition"))
         (mvp-matrix-location (gl-get-uniform-location program "uMVPMatrix"))
         (vColor-location (gl-get-uniform-location program "vColor")))
-    (println "The position handle is: " position-handle "\n")
     (gl-enable-vertex-attrib-array position-handle)
     (gl-vertex-attrib-pointer position-handle coords-per-vertex gl-float (integer->char gl-false) 12 triangle-coords-buffer)
     (gl-uniform-4-fv vColor-location 1 (apply opengl-create-color color))

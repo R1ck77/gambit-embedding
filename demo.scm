@@ -2,7 +2,6 @@
 (load "triangle-example")
 
 (define (update-function window event program)
-  (println "The program is: " program)
   (gl-clear-color 0.0 0.0 1.0 1.0)
   (gl-clear gl-color-buffer-bit)
   (draw-triangle program (opengl-matrix-identity))
