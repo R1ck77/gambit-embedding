@@ -2,10 +2,16 @@
 (load "triangle-example")
 
 (define (update-function window program event)
-  (gl-clear-color 0.0 0.0 1.0 1.0)
-  (gl-clear gl-color-buffer-bit)
-  (draw-triangle program (opengl-matrix-identity))
-  (sdl-gl-swap-window window))
+  (let* ((time (time->seconds (current-time)))
+         (c (cos time))
+         (s (sin time)))
+    (gl-clear-color 0.0 0.0 1.0 1.0)
+    (gl-clear gl-color-buffer-bit)
+    (draw-triangle program (opengl-create-float-array (list s       c  0.0 0.0
+                                                            c    (- s) 0.0 0.0
+                                                            0.0   0.0  1.0 0.0
+                                                            0.0 0.0    0.0 1.0)))
+    (sdl-gl-swap-window window)))
 
 
 (define print-step)
