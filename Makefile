@@ -24,7 +24,7 @@ opengl.o1.o: opengl.o1.c
 opengl.o: opengl.o1.c
 	gsc -obj -cc-options "-fPIC -D___DYNAMIC" -o $@ opengl.c
 
-opengl.o1.c: opengl.scm opengl-types.scm
+opengl.o1.c: opengl.scm opengl-types.scm opengl-constants.scm
 	gsc -link -flat -o $@ $<
 ### End of OpenGL block
 
