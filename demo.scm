@@ -1,16 +1,19 @@
 (load "sdl")
 (load "triangle-example")
 
+(define buffer (opengl-create-empty-float-array 16))
+
 (define (update-function window program event)
   (let* ((time (time->seconds (current-time)))
          (c (cos time))
          (s (sin time)))
     (gl-clear-color 0.0 0.0 1.0 1.0)
     (gl-clear gl-color-buffer-bit)
-    (draw-triangle program (opengl-create-float-array (list s       c  0.0 0.0
-                                                            c    (- s) 0.0 0.0
-                                                            0.0   0.0  1.0 0.0
-                                                            0.0 0.0    0.0 1.0)))))
+    (opengl-set-float-array! buffer (list s   c     0.0 0.0
+                                          c   (- s) 0.0 0.0
+                                          0.0 0.0   1.0 0.0
+                                          0.0 0.0   0.0 1.0))
+    (draw-triangle program buffer)))
 
 
 (define print-step)
@@ -37,7 +40,12 @@
         (f (wrap-function-with-time-printing (lambda (event)
                                                (update-function window program event)
                                                (sdl-gl-swap-window window)
-                                               (sdl-delay 1)))))
+                                               (sdl-delay 1)
+                                               ;;; This breaks everything!
+                                               ;;(println "Stopping the world…")
+                                               ;;(##gc)
+                                               ;;(println "…resuming the world")
+                                               ))))
     (loop-until-close (create-sdl-event) f)
     (gl-delete-program program)
     (sdl-quit)))
