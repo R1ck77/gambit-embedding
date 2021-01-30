@@ -31,6 +31,7 @@ void main() {
 
 ;; TODO/FIXME watch out for the alpha value
 (define color '(0.63671875 0.76953125 0.22265625 0.5))
+(define gl-color (apply opengl-create-color color))
 
 (define (compile-program)
   (let ((program (opengl-program-from-sources vertex-shader fragment-shader)))
@@ -51,7 +52,7 @@ void main() {
         (vColor-location (gl-get-uniform-location program "vColor")))
     (gl-enable-vertex-attrib-array position-handle)
     (gl-vertex-attrib-pointer position-handle coords-per-vertex gl-float (integer->char gl-false) 12 triangle-coords-buffer)
-    (gl-uniform-4-fv vColor-location 1 (apply opengl-create-color color))
+    (gl-uniform-4-fv vColor-location 1 gl-color)
     (gl-uniform-matrix-4-fv mvp-matrix-location 1 (integer->char gl-false) mvp-matrix)
     (gl-draw-arrays gl-triangles 0 3)
     (gl-disable-vertex-attrib-array position-handle)))

@@ -10,8 +10,7 @@
     (draw-triangle program (opengl-create-float-array (list s       c  0.0 0.0
                                                             c    (- s) 0.0 0.0
                                                             0.0   0.0  1.0 0.0
-                                                            0.0 0.0    0.0 1.0)))
-    (sdl-gl-swap-window window)))
+                                                            0.0 0.0    0.0 1.0)))))
 
 
 (define print-step)
@@ -31,11 +30,15 @@
 
 
 (define (demo-function width height)
+  (sdl-gl-set-attribute sdl-gl-doublebuffer 1)
+  (sdl-gl-set-swap-interval 1)
   (let* ((window (initialize-opengl-window width height))
         (program (compile-program))
         (f (wrap-function-with-time-printing (lambda (event)
-                                               (update-function window program event)))))
-    (wait-for-quit (create-sdl-event) f)
+                                               (update-function window program event)
+                                               (sdl-gl-swap-window window)
+                                               (sdl-delay 1)))))
+    (loop-until-close (create-sdl-event) f)
     (gl-delete-program program)
     (sdl-quit)))
 
