@@ -65,7 +65,7 @@ ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &w
 (c-define-type sdl-event (pointer (type "SDL_Event") (void)))
 (define create-sdl-event (c-lambda () sdl-event "___return(malloc(sizeof(SDL_Event)));"))
 (define get-event-type (c-lambda (sdl-event) int "___return(___arg1->type);"))
-(define sdl-poll-event! (c-lambda (sdl-event) void "SDL_PollEvent(___arg1);"))
+(define sdl-poll-event! (c-lambda (sdl-event) int "SDL_PollEvent"))
 
 (define (initialize-sdl)
   (when (not (= 0 (sdl-init sdl-init-everything)))
@@ -96,8 +96,19 @@ ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &w
         (intercept-error "Unable to create the OpenGL context: %s\n" 3))
       window-ptr)))
 
-(define (wait-for-quit event callback)
-  (sdl-poll-event! event)
-  (when (not (= (get-event-type event) sdl-quit-const))
+(define (for-each-event! event f acc)
+  (when (not (= (sdl-poll-event! event) 0))
+    (for-each-event! event f (f event acc)))
+  acc)
+
+(define (should-quit? event)
+  (for-each-event! event
+                   (lambda (event acc)
+                     (or (= (get-event-type event)
+                            sdl-quit-const)))
+                   #f))
+
+(define (loop-until-close event callback)
+  (when (not (should-quit? event))    
     (apply callback (list event))
-    (wait-for-quit event callback)))
+    (loop-until-close event callback)))
