@@ -41,6 +41,20 @@ ___return(result);"))
 (define get-GLfloat-pointer-element (c-lambda (GLfloat-pointer int) GLfloat
                                             "___return(___arg1[___arg2]);"))
 
+(define opengl-create-empty-float-array (c-lambda (int)
+                                                    GLfloat-pointer
+                                                    "___return(calloc(___arg1, sizeof(GLfloat)));"))
+
+(define __opengl-set-float-array! (c-lambda (GLfloat-pointer scheme-object int)
+                                           void
+                                           "
+for(int i = 0; i < ___arg3; ++i) {
+    ___arg1[i] = (GLfloat) get_float_element_as_c(___arg2, i);
+}"))
+
+(define (opengl-set-float-array! float-pointer float-list)
+  (__opengl-set-float-array! float-pointer float-list (length float-list)))
+
 (define __opengl-create-float-array (c-lambda (scheme-object int)
                                             GLfloat-pointer
                                             "
