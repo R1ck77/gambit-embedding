@@ -16,6 +16,9 @@
 (define sdl-window-shown (int-c-constant "SDL_WINDOW_SHOWN"))
 (define sdl-renderer-accelerated (int-c-constant "SDL_RENDERER_ACCELERATED"))
 (define sdl-quit-const (int-c-constant "SDL_QUIT"))
+;;; Attributes
+(define sdl-gl-doublebuffer (int-c-constant "SDL_GL_DOUBLEBUFFER"))
+(define sdl-gl-depth-size (int-c-constant "SDL_GL_DEPTH_SIZE"))
 
 
 ;;; Functions
@@ -52,6 +55,9 @@
 (c-define-type sdl-gl-context (pointer (type "SDL_GLContext") (void) "scm_free_gl_context"))
 (define sdl-gl-create-context (c-lambda (window-ptr) sdl-gl-context "SDL_GL_CreateContext"))
 
+;;; TODO/FIXME missing SDL_GLAttr!
+(define sdl-gl-set-attribute (c-lambda (int int) int "SDL_GL_SetAttribute"))
+
 
 (define sdl-create-window-and-renderer (c-lambda (int int window-ptr renderer-ptr)
                                                  int
@@ -60,6 +66,7 @@ SDL_Renderer *renderer =  ___arg4;
 ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &window, &renderer));"))
 (define sdl-delay (c-lambda (unsigned-int32) void "SDL_Delay"))
 (define sdl-gl-swap-window (c-lambda (window-ptr) void "SDL_GL_SwapWindow"))
+(define sdl-gl-set-swap-interval (c-lambda (int) int "SDL_GL_SetSwapInterval"))
 
 ;; SDL_Event
 (c-define-type sdl-event (pointer (type "SDL_Event") (void)))
