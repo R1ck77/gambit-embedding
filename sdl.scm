@@ -76,16 +76,6 @@ ___return(SDL_CreateWindowAndRenderer(___arg1, ___arg2, SDL_WINDOW_RESIZABLE, &w
   (sdl-log message (sdl-get-error))
   (exit exit-code))
 
-;;; TODO/FIXME for some reason the renderer is doesn't work. I think it's a memory
-(define (initialize-window-old width height)
-  (initialize-sdl)
-  (let ((window-ptr (create-window-ptr))
-        (renderer-ptr (create-renderer-ptr)))
-    (when (not (= (sdl-create-window-and-renderer width height window-ptr renderer-ptr) 0))
-      (intercept-error "Unable to create the window and the renderer: %s\n" 2))
-    (sdl-log "Initialization complete!%s\n" "")
-    renderer-ptr))
-
 (define (initialize-window width height)
   (initialize-sdl)
   (let  ((window-ptr (sdl-create-window "Test Window" width height)))
