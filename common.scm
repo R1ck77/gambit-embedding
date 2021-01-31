@@ -1,4 +1,5 @@
-(c-declare "#include <stdlib.h>")
+(c-declare "#include <stdlib.h>
+#include <stdio.h>")
 
 (define-macro (c-constant name type)
   `((c-lambda () ,type ,(string-append "___return(" name ");"))))
