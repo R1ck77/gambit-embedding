@@ -55,4 +55,4 @@ c-demo: demo.c
 		-L/home/dimeo/local/gambit/lib -lgambit -lm -ldl -lutil
 
 clean:
-	rm -f *.o *.o1 *.o1.* opengl*.c sdl*.c demo c-demo demo*.c
+	rm -f *.o *.o[1-9] *.o1.* opengl*.c sdl*.c demo c-demo demo*.c
