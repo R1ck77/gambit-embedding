@@ -1,5 +1,7 @@
 (include "common.scm")
 
+(c-declare "static int warn_on_leaked_objects = 0;")
+
 (c-declare "#include <SDL.h>")
 
 (c-declare "inline static char *convertPointer(const char *string)
@@ -48,12 +50,15 @@
                                      "SDL_RenderPresent"))
 
 ;; SDL_GL_Context
-(c-declare "long int scm_free_gl_context(SDL_GLContext context) {
-    SDL_GL_DeleteContext(context);
+(c-declare "long int scm_notify_gl_context_leaked(SDL_GLContext context) {
+    if(warn_on_leaked_objects != 0) {
+        fprintf(stderr, \"*** leaking SDL Context %p…\\n\", context);
+    }
     return 0;
 }")
-(c-define-type sdl-gl-context (pointer (type "SDL_GLContext") (void) "scm_free_gl_context"))
+(c-define-type sdl-gl-context (pointer (type "SDL_GLContext") (void) "scm_notify_gl_context_leaked"))
 (define sdl-gl-create-context (c-lambda (window-ptr) sdl-gl-context "SDL_GL_CreateContext"))
+(define sdl-gl-delete-context (c-lambda (sdl-gl-context) void "SDL_GL_DeleteContext"))
 
 ;;; TODO/FIXME missing SDL_GLAttr!
 (define sdl-gl-set-attribute (c-lambda (int int) int "SDL_GL_SetAttribute"))

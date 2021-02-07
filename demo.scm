@@ -1,7 +1,7 @@
 (load "sdl")
 (load "triangle-example")
 
-(gc-report-set! #t)
+;;(gc-report-set! #t)
 
 (define max-fps 60.0)
 
@@ -35,26 +35,21 @@
           (set! checkpoint now)
           (set! count 0))))))
 
-
 (define (demo-function width height)
   (sdl-gl-set-attribute sdl-gl-doublebuffer 1)
   (sdl-gl-set-swap-interval 1)
   (let* ((last-event (time->seconds (current-time)))
          (window (initialize-opengl-window width height))
-        (program (compile-program))
+         (program (compile-program))
         (f (wrap-function-with-time-printing (lambda (event)
+
                                                (update-function window program event)
                                                (sdl-gl-swap-window window)
                                                (let* ((now (time->seconds (current-time)))
                                                       (diff (- (/ 1 max-fps) (- now last-event))))
                                                  (when (> diff 0)
                                                    (sdl-delay (inexact->exact (truncate (* diff 1000)))))
-                                                 (set! last-event (time->seconds (current-time))))
-                                               ;;; This breaks everything!
-                                               ;;(println "Stopping the world…")
-                                               ;;(##gc)
-                                               ;;(println "…resuming the world")
-                                               ))))
+                                                 (set! last-event (time->seconds (current-time))))))))
     (loop-until-close (create-sdl-event) f)
     (gl-delete-program program)
     (sdl-quit)))
