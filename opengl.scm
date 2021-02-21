@@ -59,7 +59,8 @@
 
 
 
-
+(define gl-blend-func (c-lambda (GLenum GLenum) void "glBlendFunc"))
+(define gl-enable (c-lambda (GLenum) void "glEnable"))
 (define gl-validate-program (c-lambda (GLuint) void "glValidateProgram"))
 (define gl-get-attrib-location (c-lambda (GLuint char-string) GLint "glGetAttribLocation"))
 (define gl-enable-vertex-attrib-array (c-lambda (GLuint) void "glEnableVertexAttribArray"))

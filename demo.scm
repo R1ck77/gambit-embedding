@@ -11,7 +11,6 @@
   (let* ((time (time->seconds (current-time)))
          (c (cos time))
          (s (sin time)))
-    (gl-clear-color 0.0 0.0 1.0 1.0)
     (gl-clear gl-color-buffer-bit)
     (opengl-set-float-array! buffer (list s   c     0.0 0.0
                                           c   (- s) 0.0 0.0
@@ -35,12 +34,17 @@
           (set! checkpoint now)
           (set! count 0))))))
 
+(define (initialize-opengl)
+  (gl-clear-color 0.0 0.0 1.0 1.0)
+  (gl-blend-func gl-src-alpha gl-one-minus-src-alpha)
+  (gl-enable gl-blend))
+
 (define (demo-function width height)
   (sdl-gl-set-attribute sdl-gl-doublebuffer 1)
   (sdl-gl-set-swap-interval 1)
   (let* ((last-event (time->seconds (current-time)))
          (window (initialize-opengl-window width height))
-         (program (compile-program))
+         (program (compile-program))         
         (f (wrap-function-with-time-printing (lambda (event)
 
                                                (update-function window program event)
@@ -50,6 +54,7 @@
                                                  (when (> diff 0)
                                                    (sdl-delay (inexact->exact (truncate (* diff 1000)))))
                                                  (set! last-event (time->seconds (current-time))))))))
+    (initialize-opengl)
     (loop-until-close (create-sdl-event) f)
     (gl-delete-program program)
     (sdl-quit)))

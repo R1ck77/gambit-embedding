@@ -30,7 +30,7 @@ void main() {
 (define vertex-stride (* coords-per-vertex 4))
 
 ;; TODO/FIXME watch out for the alpha value
-(define color '(0.63671875 0.76953125 0.22265625 0.5))
+(define color '(0.63671875 0.76953125 0.22265625 0.55))
 (define gl-color (apply opengl-create-color color))
 
 (define (compile-program)

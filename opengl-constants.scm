@@ -54,3 +54,10 @@
 (define gl-shader-type (uint-c-constant "GL_SHADER_TYPE"))
 (define gl-compile-status (uint-c-constant "GL_COMPILE_STATUS"))
 (define gl-shader-source-length (uint-c-constant "GL_SHADER_SOURCE_LENGTH"))
+
+;; glEnable constants
+(define gl-blend (uint-c-constant "GL_BLEND"))
+
+;; blending
+(define gl-src-alpha (uint-c-constant "GL_SRC_ALPHA"))
+(define gl-one-minus-src-alpha (uint-c-constant "GL_ONE_MINUS_SRC_ALPHA"))

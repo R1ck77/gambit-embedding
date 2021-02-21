@@ -1,4 +1,4 @@
-(c-define-type GLenum unsigned-int)
+(c-define-type GLenum unsigned-int) ; TODO/FIXME conflicting documentation: check if unsigned!
 (c-define-type GLuint unsigned-int)
 (c-define-type GLint int)
 (c-define-type GLfloat float)
